@@ -451,11 +451,11 @@ func baseRetryPolicy(resp *http.Response, err error) (bool, error) {
 		return true, nil
 	}
 
-	// Check the response code. We retry on 500-range responses to allow
-	// the server time to recover, as 500's are typically not permanent
-	// errors and may relate to outages on the server side. This will catch
-	// invalid response codes as well, like 0 and 999.
-	if resp.StatusCode == 0 || (resp.StatusCode >= 500 && resp.StatusCode != 501) {
+	// Check the response code. We retry on 5xx-range responses greater than
+	// 501 to allow the server time to recover, as 5xx's are typically not
+	// permanent errors and may relate to outages on the server side. This will
+	// catch invalid response codes as well, like 0 and 999.
+	if resp.StatusCode == 0 || (resp.StatusCode > 501) {
 		return true, fmt.Errorf("unexpected HTTP status %s", resp.Status)
 	}
 
